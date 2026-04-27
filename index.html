@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SkyRepeat Pro | আকাশ ডিজাইন ঘর</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #5c5ce0;
+            --primary-dark: #4a4ad1;
+            --primary-light: #f0f0ff;
+            --bg: #f8fafc;
+            --text-dark: #1e293b;
+            --text-gray: #64748b;
+            --white: #ffffff;
+            --wa-green: #22c55e;
+            --tg-blue: #0088cc;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Inter', 'Segoe UI', sans-serif; }
+        body { background-color: var(--bg); color: var(--text-dark); overflow-x: hidden; }
+
+        header {
+            background: var(--primary);
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 15px;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .menu-btn {
+            width: 35px; height: 35px; display: flex; flex-direction: column;
+            justify-content: center; gap: 4px; cursor: pointer; padding: 5px;
+        }
+        .menu-btn span { width: 100%; height: 2px; background: white; border-radius: 10px; transition: 0.3s; }
+        .menu-btn span:nth-child(2) { width: 60%; }
+
+        .logo { font-size: 18px; font-weight: 800; letter-spacing: 0.5px; }
+        .lang-select {
+            background: rgba(255,255,255,0.15); color: white; border: none;
+            padding: 4px 8px; border-radius: 5px; cursor: pointer; font-size: 13px; outline: none;
+        }
+
+        .sidebar {
+            position: fixed; left: -280px; top: 0; width: 280px; height: 100%;
+            background: var(--white); box-shadow: 5px 0 25px rgba(0,0,0,0.1);
+            transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1001; padding: 25px 15px;
+        }
+        .sidebar.active { left: 0; }
+        .social-link {
+            display: flex; align-items: center; padding: 12px; text-decoration: none;
+            color: var(--text-dark); border-radius: 10px; margin-bottom: 8px; font-weight: 600; transition: 0.2s;
+        }
+        .social-link:hover { background: var(--primary-light); color: var(--primary); }
+        .social-link i { margin-right: 12px; font-size: 20px; }
+
+        .overlay {
+            position: fixed; display: none; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.3); backdrop-filter: blur(2px); z-index: 1000;
+        }
+
+        main { display: flex; flex-direction: column; align-items: center; padding: 25px 15px; }
+        
+        .main-card {
+            background: var(--white); width: 100%; max-width: 500px; border-radius: 16px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.05); padding: 25px; border: 1px solid #edf2f7; margin-bottom: 30px;
+        }
+
+        h1 { font-size: 24px; font-weight: 700; margin-bottom: 8px; }
+        .description { font-size: 13.5px; color: var(--text-gray); margin-bottom: 20px; line-height: 1.5; }
+
+        .clear-btn { background: #f1f5f9; color: #64748b; border: 1px solid #e2e8f0; padding: 4px 10px; border-radius: 15px; font-size: 11px; cursor: pointer; }
+
+        textarea, .input-field {
+            width: 100%; border: 1.5px solid #e2e8f0; border-radius: 10px;
+            padding: 12px; font-size: 15px; box-sizing: border-box; background: #fdfdfd; transition: 0.3s;
+        }
+        textarea:focus, .input-field:focus { border-color: var(--primary); outline: none; background: #fff; box-shadow: 0 0 0 3px rgba(92, 92, 224, 0.1); }
+        textarea { min-height: 110px; }
+
+        .btn-repeat { 
+            width: 100%; background: var(--primary); color: white; border: none; 
+            padding: 14px; border-radius: 10px; font-weight: 700; cursor: pointer; 
+            font-size: 16px; transition: 0.3s; box-shadow: 0 4px 12px rgba(92, 92, 224, 0.3);
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            position: relative; overflow: hidden;
+        }
+        .btn-repeat:disabled { background: #64748b; cursor: not-allowed; box-shadow: none; }
+        
+        /* কাউন্টার টাইমার স্টাইল - একদম মাঝখানে */
+        .timer-center {
+            font-size: 20px; font-weight: 800; color: #fff; display: none;
+        }
+
+        .main-btn-group { display: flex; gap: 10px; margin-top: 20px; }
+
+        .ad-container {
+            width: 100%; max-width: 500px; background: #000; border: 1.5px solid #ffffff;
+            border-radius: 12px; padding: 8px; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4); text-align: center;
+        }
+
+        footer { 
+            background: #ffffff; color: var(--text-dark); padding: 40px 20px; text-align: center; 
+            border-top: 1px solid #e2e8f0; margin-top: 30px;
+        }
+        .footer-logo { font-size: 18px; font-weight: 800; color: var(--primary); margin-bottom: 15px; display: block; }
+        .footer-socials { display: flex; justify-content: center; gap: 15px; }
+        .footer-socials a { 
+            width: 40px; height: 40px; border-radius: 50%; background: #f1f5f9;
+            display: flex; align-items: center; justify-content: center;
+            color: #475569; font-size: 18px; transition: 0.3s; text-decoration: none;
+        }
+        .footer-socials a:hover { background: var(--primary); color: white; transform: translateY(-3px); }
+
+        #result-area { display: none; margin-top: 15px; }
+        .fade-in { animation: fadeIn 0.5s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="menu-btn" onclick="toggleMenu()">
+            <span></span><span></span><span></span>
+        </div>
+        <div class="logo">SkyText</div>
+        <select id="langSelect" class="lang-select" onchange="changeLanguage(this.value)">
+            <option value="en" selected>English</option>
+            <option value="bn">বাংলা</option>
+            <option value="hi">हिन्दी</option>
+        </select>
+    </header>
+
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebar">
+        <h3 id="side-title" style="margin-bottom: 20px; font-size: 18px;">Social Networks</h3>
+        <a href="https://www.facebook.com/share/14gNjTkJ2Lk/" target="_blank" class="social-link"><i class="fab fa-facebook" style="color: #1877f2;"></i> Facebook</a>
+        <a href="https://www.instagram.com/crush_akash_9x?igsh=cjRtazF5MHN6Nngz" target="_blank" class="social-link"><i class="fab fa-instagram" style="color: #e4405f;"></i> Instagram</a>
+        <a href="https://t.me/mrakash9x" target="_blank" class="social-link"><i class="fab fa-telegram" style="color: var(--tg-blue);"></i> Telegram</a>
+        <a href="https://wa.link/nd6ki7" target="_blank" class="social-link"><i class="fab fa-whatsapp" style="color: var(--wa-green);"></i> WhatsApp</a>
+    </div>
+
+    <main>
+        <div class="main-card">
+            <h1 id="title">Text Repeater</h1>
+            <p class="description" id="desc">Repeat your text thousands of times in one click.</p>
+
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+                <label id="lbl-text" style="font-weight:600; font-size:14px;">Text to repeat</label>
+                <button class="clear-btn" id="btn-clear" onclick="clearText()">Clear</button>
+            </div>
+            <textarea id="text" placeholder="Write here..."></textarea>
+
+            <div style="margin-top: 15px;">
+                <label id="lbl-sep" style="font-weight:600; font-size:14px; margin-bottom:8px; display:block;">Separator</label>
+                <input type="text" id="separator" class="input-field" placeholder="e.g. comma or space" style="margin-bottom: 15px;">
+
+                <label id="lbl-count" style="font-weight:600; font-size:14px; margin-bottom:8px; display:block;">Repetitions</label>
+                <input type="number" id="count" class="input-field" value="10" style="margin-bottom: 15px;">
+
+                <div class="checkbox-group" style="display: flex; gap: 15px; margin-bottom: 20px;">
+                    <label style="font-size:14px; color:var(--text-gray);"><input type="checkbox" id="newline" checked> <span id="opt-newline">New line</span></label>
+                    <label style="font-size:14px; color:var(--text-gray);"><input type="checkbox" id="space"> <span id="opt-space">Space</span></label>
+                </div>
+            </div>
+
+            <button class="btn-repeat" id="btn-generate" onclick="startProcess()">
+                <span id="btn-content"><i class="fas fa-sync-alt"></i> <span id="btn-text">Generate Text</span></span>
+                <span id="timer" class="timer-center"></span>
+            </button>
+
+            <div id="result-area" class="fade-in">
+                <textarea id="output" readonly style="margin-top:15px; background:#f8fafc; border-style: dashed; border-color: #cbd5e1;"></textarea>
+                <div class="main-btn-group">
+                    <button class="btn-repeat" id="btn-copy" style="background:#334155;" onclick="copyAll()">Copy All</button>
+                    <button class="btn-repeat" style="background:var(--wa-green);" onclick="shareWA()"><i class="fab fa-whatsapp"></i> WhatsApp</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="ad-container">
+            <p style="color: #94a3b8; font-size: 10px; margin-bottom: 5px;">ADVERTISEMENT</p>
+            <div style="min-height: 200px; display: flex; align-items: center; justify-content: center; color: #334155; font-size: 12px;">
+                Adstra Ad Zone
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <span class="footer-logo">SKY DESIGN GHOR</span>
+        <div class="footer-socials">
+            <a href="https://www.facebook.com/share/14gNjTkJ2Lk/" target="_blank"><i class="fab fa-facebook-f"></i></a>
+            <a href="https://www.instagram.com/crush_akash_9x?igsh=cjRtazF5MHN6Nngz" target="_blank"><i class="fab fa-instagram"></i></a>
+            <a href="https://t.me/mrakash9x" target="_blank" style="background: #0088cc15; color: var(--tg-blue);"><i class="fab fa-telegram-plane"></i></a>
+            <a href="https://wa.link/nd6ki7" target="_blank"><i class="fab fa-whatsapp"></i></a>
+        </div>
+        <p style="margin-top: 20px; font-size: 12px; color: #94a3b8;">© 2026 আকাশ ডিজাইন ঘর | All Rights Reserved</p>
+    </footer>
+
+    <script>
+        const translations = {
+            bn: { title: "টেক্সট রিপিটার", desc: "এক ক্লিকে আপনার টেক্সট হাজার বার রিপিট করুন।", lblText: "রিপিট করার টেক্সট", btnClear: "মুছে ফেলুন", textPlaceholder: "এখানে লিখুন...", lblSep: "সেপারেটর (চিহ্ন)", sepPlaceholder: "যেমন: কমা বা স্পেস", lblCount: "রিপিট সংখ্যা", optNewline: "নতুন লাইন", optSpace: "স্পেস", btnGenerate: "টেক্সট তৈরি করুন", btnCopy: "কপি করুন", sideTitle: "সোশ্যাল নেটওয়ার্ক" },
+            en: { title: "Text Repeater", desc: "Repeat your text thousands of times in one click.", lblText: "Text to repeat", btnClear: "Clear", textPlaceholder: "Write here...", lblSep: "Separator", sepPlaceholder: "e.g. comma or space", lblCount: "Number of repetitions", optNewline: "New line", optSpace: "Space", btnGenerate: "Generate Text", btnCopy: "Copy All", sideTitle: "Social Networks" },
+            hi: { title: "टेक्स्ट रिपीटर", desc: "एक क्लिक में अपने टेक्स्ट को हजारों बार दोहराएं।", lblText: "दोहराने के लिए टेक्स्ट", btnClear: "साफ करें", textPlaceholder: "यहाँ लिखें...", lblSep: "विभाजक", sepPlaceholder: "जैसे: अल्पविराम या स्थान", lblCount: "दोहराव की संख्या", optNewline: "नई लाइन", optSpace: "स्पेस", btnGenerate: "टेक्स्ट बनाएं", btnCopy: "कॉपी करें", sideTitle: "सोशल नेटवर्क" }
+        };
+
+        let currentLang = 'en';
+
+        function changeLanguage(lang) {
+            currentLang = lang;
+            const t = translations[lang] || translations['en'];
+            document.getElementById('title').innerText = t.title;
+            document.getElementById('desc').innerText = t.desc;
+            document.getElementById('lbl-text').innerText = t.lblText;
+            document.getElementById('btn-clear').innerText = t.btnClear;
+            document.getElementById('text').placeholder = t.textPlaceholder;
+            document.getElementById('lbl-sep').innerText = t.lblSep;
+            document.getElementById('separator').placeholder = t.sepPlaceholder;
+            document.getElementById('lbl-count').innerText = t.lblCount;
+            document.getElementById('opt-newline').innerText = t.optNewline;
+            document.getElementById('opt-space').innerText = t.optSpace;
+            document.getElementById('btn-text').innerText = t.btnGenerate;
+            document.getElementById('btn-copy').innerText = t.btnCopy;
+            document.getElementById('side-title').innerText = t.sideTitle;
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            changeLanguage('en'); // ডিফল্ট ইংলিশ সিলেক্ট করা থাকবে
+        });
+
+        function startProcess() {
+            const text = document.getElementById('text').value;
+            const count = parseInt(document.getElementById('count').value);
+            if(!text || isNaN(count)) {
+                alert(currentLang === 'bn' ? "দয়া করে টেক্সট এবং সংখ্যা লিখুন!" : "Please enter text and count!");
+                return;
+            }
+
+            const btn = document.getElementById('btn-generate');
+            const btnContent = document.getElementById('btn-content');
+            const timerDisplay = document.getElementById('timer');
+            const resultArea = document.getElementById('result-area');
+
+            resultArea.style.display = 'none';
+            btnContent.style.display = 'none'; // মূল লেখা লুকালে টাইমার মাঝখানে আসবে
+            timerDisplay.style.display = 'block';
+            btn.disabled = true;
+            
+            let timeLeft = 15;
+            timerDisplay.innerText = timeLeft + "s";
+
+            const countdown = setInterval(() => {
+                timeLeft--;
+                timerDisplay.innerText = timeLeft + "s";
+
+                if(timeLeft <= 0) {
+                    clearInterval(countdown);
+                    timerDisplay.style.display = 'none';
+                    btnContent.style.display = 'flex';
+                    btn.disabled = false;
+                    generateText();
+                }
+            }, 1000);
+        }
+
+        function generateText() {
+            const text = document.getElementById('text').value;
+            const count = parseInt(document.getElementById('count').value);
+            const sep = document.getElementById('separator').value;
+            let glue = sep;
+            if(document.getElementById('newline').checked) glue += "\n";
+            if(document.getElementById('space').checked) glue += " ";
+            document.getElementById('output').value = Array(count).fill(text).join(glue);
+            document.getElementById('result-area').style.display = 'block';
+        }
+
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('active');
+            const overlay = document.getElementById('overlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+        }
+
+        function clearText() {
+            document.getElementById('text').value = '';
+            document.getElementById('result-area').style.display = 'none';
+        }
+
+        function copyAll() {
+            const out = document.getElementById('output');
+            out.select();
+            document.execCommand('copy');
+            alert(currentLang === 'bn' ? "কপি হয়েছে!" : "Copied!");
+        }
+
+        function shareWA() {
+            window.open(`https://wa.me/?text=${encodeURIComponent(document.getElementById('output').value)}`, '_blank');
+        }
+    </script>
+</body>
+</html>
